@@ -199,7 +199,7 @@ causing wrong canary placement.
 
 ---
 
-## Next Steps (Level A — for teammate)
+## Next Steps (Level A)
 
 ### Option A: Generative Canary Module (proposed, not yet implemented)
 
