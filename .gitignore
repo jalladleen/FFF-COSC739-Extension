@@ -1,0 +1,21 @@
+# Dataset - download separately from original FFF repo
+Data/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Checkpoints - too large, regenerate by running evaluate_fast.py
+# (keep results/ and figures/ since they're small)
+
+# Ultralytics local copy
+ultralytics/
+
+# Virtual environment
+ffwf_env310/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db
