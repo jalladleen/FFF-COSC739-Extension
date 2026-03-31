@@ -328,37 +328,64 @@ class Canary:
         del canary_img_BGR
         pass
 
-    def eval_single(self, img_cv_ori):
+    def eval_single(self, img_cv_ori, *, return_details: bool = False):
         img_cv = copy.deepcopy(img_cv_ori)
-        possible_person_ls = self.detector.FindHiddenPerson(deepcopy(img_cv), person_conf=self.person_conf, overlap_thresh=self.overlap_thresh, faster=self.faster, remove_small_length=20)[0]
+        possible_person_ls = self.detector.FindHiddenPerson(
+            deepcopy(img_cv),
+            person_conf=self.person_conf,
+            overlap_thresh=self.overlap_thresh,
+            faster=self.faster,
+            remove_small_length=20
+        )[0]
+
         if (img_cv.shape[0] != self.img_size or img_cv.shape[1] != self.img_size):
             img_sized = cv2.resize(img_cv, (self.cfg.img_size, self.cfg.img_size))
         else:
             img_sized = img_cv
+
+        canary_original_num = 0
+        canary_put_num = 0
+        canary_detected_num = 0
 
         if len(possible_person_ls) == 0 or (np.count_nonzero(possible_person_ls) == 0):
             is_attack = False
         else:
             img_original_result = self.detector.detect_single(img_cv)[0]
             if img_original_result is not None:
-                original_canary_result = img_original_result[np.where(img_original_result[:, -1] == self.canary_cls_id)]
+                original_canary_result = img_original_result[
+                    np.where(img_original_result[:, -1] == self.canary_cls_id)
+                ]
                 canary_original_num = len(original_canary_result)
-            else:
-                canary_original_num = 0
+
             img_sized_with_canary = deepcopy(img_sized)
-            img_sized_with_canary, canary_area = add_defensivepatch_into_img(self.cfg, img_sized_with_canary, self.eval_canary, possible_person_ls)
+            img_sized_with_canary, canary_area = add_defensivepatch_into_img(
+                self.cfg, img_sized_with_canary, self.eval_canary, possible_person_ls
+            )
             canary_put_num = len(canary_area)
+
             img_with_canary_result = self.detector.detect_single(img_sized_with_canary)[0]
             if img_with_canary_result is not None:
-                canary_result = img_with_canary_result[np.where(img_with_canary_result[:, -1] == self.canary_cls_id)]
+                canary_result = img_with_canary_result[
+                    np.where(img_with_canary_result[:, -1] == self.canary_cls_id)
+                ]
                 canary_detected_num = len(canary_result)
-            else:
-                canary_detected_num = 0
+
             if canary_original_num + canary_put_num == canary_detected_num:
                 is_attack = False
             else:
                 is_attack = True
-        return is_attack
+
+        if not return_details:
+            return is_attack
+
+        return {
+            "is_attack": is_attack,
+            "canary_original_num": canary_original_num,
+            "canary_put_num": canary_put_num,
+            "canary_detected_num": canary_detected_num,
+            "img_with_canary": img_sized_with_canary if canary_put_num > 0 else img_sized,
+            "detections_with_canary": img_with_canary_result if canary_put_num > 0 else None,
+        }
 
     def eval_load_canary(self, canary_path, canary_cls_id):
         canary_img = cv2.imread(canary_path, 1)
@@ -485,14 +512,22 @@ class Woodpecker:
         del wd_img
         pass
 
-    def eval_single(self, img_cv):
+    def eval_single(self, img_cv, *, return_details: bool = False):
         possible_person_ls = self.detector.FindHiddenPerson(deepcopy(img_cv), person_conf=self.person_conf, overlap_thresh=self.overlap_thresh, faster=self.faster, remove_small_length=20)[0]
         if (img_cv.shape[0] != self.img_size or img_cv.shape[1] != self.img_size):
             img_sized = cv2.resize(img_cv, (self.cfg.img_size, self.cfg.img_size))
         else:
             img_sized = img_cv
         if len(possible_person_ls) == 0 or (np.count_nonzero(possible_person_ls) == 0):
-            return False
+            if not return_details:
+                return False
+            return {
+                "is_attack": False,
+                "persons_before": 0,
+                "persons_after": 0,
+                "img_with_wd": img_sized,
+                "detections_with_wd": None,
+            }
         else:
             img_original_result = self.detector.detect_single(img_sized)[0]
             if img_original_result is not None:
@@ -520,7 +555,15 @@ class Woodpecker:
                     if max(temp_ls) < 0.4:
                         has_new_person = True
                         break
-            return has_new_person
+            if not return_details:
+                return has_new_person
+            return {
+                "is_attack": has_new_person,
+                "persons_before": len(detected_person_in_original_ls),
+                "persons_after": len(detected_person_in_wd_ls),
+                "img_with_wd": img_sized_with_wd,
+                "detections_with_wd": img_with_wd_result,
+            }
 
     def cal_chongdie(self, box1, box2, x1y1x2y2=False):
         if x1y1x2y2:
