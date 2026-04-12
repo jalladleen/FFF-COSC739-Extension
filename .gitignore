@@ -8,6 +8,10 @@ __pycache__/
 
 # Checkpoints - too large, regenerate by running evaluate_fast.py
 # (keep results/ and figures/ since they're small)
+generative_canary/generative_canary_training/
+generative_canary/mode_collapse_exp/
+generative_canary/on_the_fly_canary/
+generative_canary/canary_cls17_training/
 
 # Ultralytics local copy
 ultralytics/
