@@ -12,6 +12,8 @@ generative_canary/generative_canary_training/
 generative_canary/mode_collapse_exp/
 generative_canary/on_the_fly_canary/
 generative_canary/canary_cls17_training/
+generative_canary/ensemble_1000/
+generative_canary/ensemble_smoke/
 
 # Ultralytics local copy
 ultralytics/
