@@ -1,0 +1,13 @@
+\beamer@sectionintoc {1}{Original Paper Summary}{3}{0}{1}
+\beamer@sectionintoc {2}{The Gap: Hardware-Dependent Security}{5}{0}{2}
+\beamer@sectionintoc {3}{Our Solution: Generative Canary}{7}{0}{3}
+\beamer@sectionintoc {4}{What Failed: Mode Collapse}{9}{0}{4}
+\beamer@sectionintoc {5}{What Worked: Ensemble of Generators}{12}{0}{5}
+\beamer@sectionintoc {6}{Scaling to 1000 Generators on HPC}{13}{0}{6}
+\beamer@sectionintoc {7}{Evaluation Results}{15}{0}{7}
+\beamer@sectionintoc {8}{Diversity Analysis}{16}{0}{8}
+\beamer@sectionintoc {9}{Theoretical Framework}{18}{0}{9}
+\beamer@sectionintoc {10}{Adversary Cost Analysis}{20}{0}{10}
+\beamer@sectionintoc {11}{The Killer Move: Retrainability}{23}{0}{11}
+\beamer@sectionintoc {12}{Limitations}{24}{0}{12}
+\beamer@sectionintoc {13}{Summary}{25}{0}{13}
